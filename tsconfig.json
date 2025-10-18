@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                // Usa a versão moderna do JavaScript
+    "module": "NodeNext",             // O sistema de módulos mais moderno do Node
+    "moduleResolution": "NodeNext",   // Como o Node encontra os módulos
+    "baseUrl": ".",                   // Define a pasta base do projeto
+    "outDir": "./dist",               // Onde o código "compilado" iria
+    "esModuleInterop": true,          // **O MAIS IMPORTANTE**: Permite "import fastify from 'fastify'"
+    "forceConsistentCasingInFileNames": true, // Garante que os nomes dos arquivos sejam consistentes
+    "strict": true,                   // Liga todas as checagens rigorosas do TypeScript
+    "skipLibCheck": true              // Pula a verificação de tipos em bibliotecas (mais rápido)
+  },
+  "include": ["src/**/*"], // Diz ao TypeScript para olhar apenas a pasta "src"
+  "exclude": ["node_modules"] // Ignora a "node_modules"
+}

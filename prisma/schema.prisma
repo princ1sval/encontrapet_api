@@ -1,0 +1,139 @@
+// Este é o seu DER em formato de código Prisma.
+
+// --- CONFIGURAÇÃO DO PROJETO ---
+
+// 1. Define o seu banco de dados
+// É aqui que você diz ao Prisma que está usando "postgresql"
+// e que a URL de conexão (com usuário, senha, e nome do banco)
+// está guardada no seu arquivo .env
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 2. Define o "gerador"
+// Isso diz ao Prisma para criar o "Prisma Client" - que é o 
+// código TypeScript que você vai usar na sua camada "data/" 
+// para fazer coisas como: prisma.usuario.create(...)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- SEUS MODELOS (TABELAS) COMEÇAM AQUI ---
+// Cada "model" abaixo será traduzido em uma "tabela" no seu pgAdmin.
+
+model Usuario {
+  // --- Colunas da Tabela ---
+
+  // @id = Define esta coluna como a Chave Primária (PK)
+  // @default(uuid()) = Diz ao banco para gerar um ID único automaticamente
+  id        String @id @default(uuid())
+  nome      String
+  // @unique = Garante que não possam existir dois usuários com o mesmo email
+  email     String @unique
+  senha     String
+  telefone  String
+  cidade    String
+
+  // --- Relações (Conexões) ---
+
+  // pets Usuario[] = Cria a relação "Um-para-Muitos".
+  // Diz que um Usuário pode ter uma lista (um array) de Pets.
+  pets          Pet[]
+  // Diz que um Usuário pode ter uma lista de Candidaturas.
+  candidaturas  Candidatura[]
+
+  // @@map("usuarios") = Mapeia o nome do modelo.
+  // No código, você vai chamar de "Usuario", 
+  // mas no banco de dados (pgAdmin), a tabela vai se chamar "usuarios" (em minúsculo).
+  @@map("usuarios")
+}
+
+model ONG {
+  id        String @id @default(uuid())
+  nome      String
+  email     String @unique
+  telefone  String
+  endereco  String
+
+  // --- Relações ---
+  // Uma ONG pode ter uma lista (array) de Pets para adoção.
+  pets          Pet[]
+  // Uma ONG pode receber uma lista de Candidaturas.
+  candidaturas  Candidatura[]
+
+  @@map("ongs")
+}
+
+model Pet {
+  id        String @id @default(uuid())
+  nome      String
+  especie   String
+  // String? = O "?" na frente do tipo significa que esta coluna é OPCIONAL.
+  // Um pet pode ou não ter uma raça definida (ex: vira-lata).
+  raca      String?
+  cor       String
+
+  // --- Chaves Estrangeiras (FKs) para Posse ---
+  
+  // Esta é a coluna que vai guardar o ID do Usuário (FK - Usuário do seu DER)
+  dono_ID String? // É opcional, pois o pet pode ser de uma ONG
+  // Esta é a linha que CRIA a relação de verdade.
+  // Ela diz: "A coluna 'dono_ID' acima se refere à coluna 'id' do 'model Usuario'"
+  usuario Usuario? @relation(fields: [dono_ID], references: [id])
+  
+  // Esta é a coluna que vai guardar o ID da ONG (FK - ONG do seu DER)
+  Ong_ID  String? // É opcional, pois o pet pode ser de um Usuário
+  // Diz: "A coluna 'Ong_ID' acima se refere à coluna 'id' do 'model ONG'"
+  ong     ONG?    @relation(fields: [Ong_ID], references: [id])
+
+  // --- Relações ---
+  // Um Pet pode ter uma lista de Relatórios (pode sumir várias vezes)
+  relatorios    Relatorio[]
+  // Um Pet pode receber uma lista de Candidaturas
+  candidaturas  Candidatura[]
+
+  @@map("pets")
+}
+
+model Relatorio {
+  id            String   @id @default(uuid())
+  tipo          String   // "perdido", "encontrado", "avistado"
+  // @default(now()) = Define um valor padrão. Se você não enviar uma data,
+  // o banco de dados vai preencher com a data e hora atuais.
+  data_relato   DateTime @default(now())
+  localizacao   String
+  descricao     String
+  
+  // --- Relação (FK) ---
+  // Esta é a coluna que guarda o ID do Pet (FK - Pet do seu DER)
+  // Note que NÃO é opcional ("?"). Todo relatório DEVE pertencer a um pet.
+  Pet_ID        String
+  // Diz: "A coluna 'Pet_ID' acima se refere à coluna 'id' do 'model Pet'"
+  pet           Pet      @relation(fields: [Pet_ID], references: [id])
+
+  @@map("relatorios")
+}
+
+model Candidatura {
+  id          String @id @default(uuid())
+  // @default("pendente") = Define "pendente" como o valor padrão
+  // para o status quando uma nova candidatura for criada.
+  status      String @default("pendente") // "aprovado", "rejeitado"
+
+  // --- As 3 Chaves Estrangeiras que conectam tudo ---
+  
+  // FK - USUÁRIO do seu DER
+  Usuario_ID  String
+  usuario     Usuario @relation(fields: [Usuario_ID], references: [id])
+
+  // FK - PET do seu DER
+  Pet_ID      String
+  pet         Pet     @relation(fields: [Pet_ID], references: [id])
+
+  // FK - ONG do seu DER
+  ONG_ID      String
+  ong         ONG     @relation(fields: [ONG_ID], references: [id])
+
+  @@map("candidaturas")
+}
