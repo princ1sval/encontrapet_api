@@ -1,14 +1,14 @@
-// src/app.ts
 import fastify from 'fastify'
 import cors from '@fastify/cors'
+import { usuariosRoutes } from './routes/usuarios.routes'
+import { petsRoutes } from './routes/pets.routes'
 
 // Cria a aplicação Fastify
 export const app = fastify()
 
-// Configura o CORS (para que seu frontend possa acessar a API)
 app.register(cors, {
-  origin: true, // Em produção, mude para o seu domínio
+  origin: true,
 })
 
-// --- (Futuramente, aqui registraremos as rotas) ---
-// app.register(suasRotas)
+app.register(usuariosRoutes)
+app.register(petsRoutes)
