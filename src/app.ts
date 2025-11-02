@@ -3,8 +3,8 @@ import cors from '@fastify/cors'
 import { usuariosRoutes } from './routes/usuarios.routes'
 import { petsRoutes } from './routes/pets.routes'
 import { parceirosRoutes } from './routes/parceiros.routes'
+import { adocaoRoutes } from './routes/adocao.routes'
 
-// Cria a aplicação Fastify
 export const app = fastify()
 
 app.register(cors, {
@@ -14,3 +14,4 @@ app.register(cors, {
 app.register(usuariosRoutes)
 app.register(petsRoutes)
 app.register(parceirosRoutes)
+app.register(adocaoRoutes)
