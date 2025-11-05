@@ -6,6 +6,7 @@ import { BuscarParceiroPorIdBusiness } from '../business/BuscarParceiroPorIdBusi
 import { ParceiroUpdateDTO } from '../data/ParceiroData'
 import { AtualizarParceiroBusiness } from '../business/AtualizarParceiroBusiness'
 import { OngCadastraPetBusiness } from '../business/OngCadastraPetBusiness'
+import { ListarCandidaturasDaOngBusiness } from '../business/ListarCandidaturasDaOngBusiness'
 
 
 const criarParceiroBusiness = new CriarParceiroBusiness()
@@ -13,6 +14,7 @@ const listarParceirosBusiness = new ListarParceirosBusiness()
 const buscarParceiroPorIdBusiness = new BuscarParceiroPorIdBusiness()
 const atualizarParceiroBusiness = new AtualizarParceiroBusiness()
 const ongCadastraPetBusiness = new OngCadastraPetBusiness()
+const listarCandidaturasDaOngBusiness = new ListarCandidaturasDaOngBusiness()
 
 
 class ParceiroController {
@@ -93,6 +95,24 @@ class ParceiroController {
       return reply.status(400).send({ error: error.message })
     }
   }
+
+  async listarCandidaturas(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      // Pega o ID da ONG do cabeçalho 'authorization'
+      const idDaOng = request.headers.authorization
+
+      //Envia para a camada de negócio executar
+      const listaDeCandidaturas = await listarCandidaturasDaOngBusiness.executar(idDaOng as string)
+
+      // Retorna OK com a lista
+      return reply.status(200).send(listaDeCandidaturas)
+
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message })
+    }
+  }
+
+  
 }
 
 export { ParceiroController }

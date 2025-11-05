@@ -8,7 +8,8 @@ import { adocaoRoutes } from './routes/adocao.routes'
 export const app = fastify()
 
 app.register(cors, {
-  origin: true,
+  origin: true, // Permite que qualquer origem (qualquer site) acesse sua API
+  allowedHeaders: ['Content-Type', 'authorization']
 })
 
 app.register(usuariosRoutes)

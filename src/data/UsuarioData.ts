@@ -10,6 +10,14 @@ interface UsuarioDTO {
     cidade: string;
 }
 
+interface UsuarioUpdateDTO {
+    nome?: string;
+    email?: string;
+    senha?: string;
+    telefone?: string;
+    cidade?: string;
+}
+
 class UsuarioData {
   // metodo de busca por e-mail 
     async buscarPorEmail(email: string) {
@@ -51,6 +59,13 @@ class UsuarioData {
             }
         })
     }
+
+    async atualizar(id: string, dados: UsuarioUpdateDTO) {
+    return await prisma.usuario.update({
+        where: { id },
+        data: dados // O Prisma só atualiza os campos que forem enviados
+        })
+    }
 }
 
-export { UsuarioData, UsuarioDTO }
+export { UsuarioData, UsuarioDTO, UsuarioUpdateDTO }

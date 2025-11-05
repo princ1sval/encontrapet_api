@@ -12,6 +12,7 @@ export async function parceirosRoutes(app: FastifyInstance) {
     app.get('/parceiros/:idDoParceiro', parceiroController.buscarPorId)
     app.put('/parceiros/eu', parceiroController.atualizarPerfil)
     app.post('/parceiros/pets', parceiroController.cadastrarPet)
+    app.get('/parceiros/eu/candidaturas', parceiroController.listarCandidaturas)
 
   // (Futuramente: GET /parceiros, etc.)
 }

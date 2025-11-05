@@ -9,5 +9,6 @@ export async function adocaoRoutes(app: FastifyInstance) {
 
     app.get('/adocao/pets', adocaoController.listar)
     app.get('/adocao/pets/:idDoPet', adocaoController.buscarPorId)
+    app.post('/adocao/pets/:idDoPet/candidaturas', adocaoController.criarCandidatura)
 
 }

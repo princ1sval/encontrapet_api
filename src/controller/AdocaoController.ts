@@ -2,10 +2,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { ListarPetsParaAdocaoBusiness } from '../business/ListarPetsParaAdocaoBusiness'
 import { BuscarPetParaAdocaoBusiness } from '../business/BuscarPetParaAdocaoBusiness'
+import { CriarCandidaturaBusiness } from '../business/CriarCandidaturaBusiness'
 
-// Instancia a camada de negócio
+// Instancia as camadas de negócios
 const listarPetsParaAdocaoBusiness = new ListarPetsParaAdocaoBusiness()
 const buscarPetParaAdocaoBusiness = new BuscarPetParaAdocaoBusiness()
+const criarCandidaturaBusiness = new CriarCandidaturaBusiness()
 
 class AdocaoController {
 
@@ -36,6 +38,29 @@ class AdocaoController {
         return reply.status(404).send({ error: error.message })
         }
     }
+
+    async criarCandidatura(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      // Pega o ID do usuário logado (candidato) do header
+        const idDoUsuario = request.headers.authorization
+
+        // 2. Pega o ID do pet da URL
+        const { idDoPet } = request.params as { idDoPet: string }
+
+        // 3. Envia os IDs para a camada de negócio
+        const candidatura = await criarCandidaturaBusiness.executar({
+            usuarioId: idDoUsuario as string,
+            petId: idDoPet
+        })
+
+        return reply.status(201).send(candidatura)
+
+        } catch (error: any) {
+        return reply.status(400).send({ error: error.message })
+        }
+    }
+
+    
 }
 
 export { AdocaoController }

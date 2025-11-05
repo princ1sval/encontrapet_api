@@ -3,10 +3,14 @@ import { CriarUsuarioBusiness } from '../business/CriarUsuarioBusiness'
 import { UsuarioDTO } from '../data/UsuarioData'
 import { AutenticarUsuarioBusiness } from '../business/AutenticarUsuarioBusiness'
 import { BuscarUsuarioPorIdBusiness } from '../business/BuscarUsuarioPorIdBusiness'
+import { UsuarioUpdateDTO } from '../data/UsuarioData'
+import { AtualizarUsuarioBusiness } from '../business/AtualizarUsuarioBusiness'
+
 
 const criarUsuarioBusiness = new CriarUsuarioBusiness()
 const autenticarUsuarioBusiness = new AutenticarUsuarioBusiness()
 const buscarUsuarioPorIdBusiness = new BuscarUsuarioPorIdBusiness()
+const atualizarUsuarioBusiness = new AtualizarUsuarioBusiness()
 
 class UsuarioController {
   async criar(request: FastifyRequest, reply: FastifyReply) {
@@ -47,6 +51,25 @@ class UsuarioController {
       // 401 = Não autorizado (não enviou o ID)
       // 404 = Não encontrado (ID não existe no banco)
       return reply.status(error.message.includes("identificado") ? 401 : 404).send({ error: error.message })
+    }
+  }
+
+  async atualizarPerfil(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      //Pega o ID do usuário do cabeçalho 'authorization'
+      const idDoUsuario = request.headers.authorization
+
+      //Pega os dados para atualizar do corpo da requisição
+      const dados = request.body as UsuarioUpdateDTO
+
+      //Envia para a camada de negócio executar
+      const usuarioAtualizado = await atualizarUsuarioBusiness.executar(idDoUsuario as string, dados)
+
+      //Retorna 200 (OK) com os novos dados (sem senha)
+      return reply.status(200).send(usuarioAtualizado)
+
+    } catch (error: any) {
+      return reply.status(400).send({ error: error.message })
     }
   }
 }

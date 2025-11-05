@@ -1,0 +1,348 @@
+{
+	"info": {
+		"_postman_id": "8a9c7a55-c062-4ee0-81b3-bab6e940e316",
+		"name": "Encontra_Pet_Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44584349",
+		"_collection_link": "https://crimson-shuttle-4314930.postman.co/workspace/Jo%C3%A3o-Predo's-Workspace~d42618f4-c173-4849-878f-18cfd8b4f0a6/collection/44584349-8a9c7a55-c062-4ee0-81b3-bab6e940e316?action=share&source=collection_link&creator=44584349"
+	},
+	"item": [
+		{
+			"name": "criação de novo usuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"João Pedro\",\r\n  \"email\": \"joao.teste@email.com\",\r\n  \"senha\": \"123456\",\r\n  \"telefone\": \"32988776655\",\r\n  \"cidade\": \"Muriaé\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/usuarios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Autentificação Sessão",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"joao.teste@email.com\",\r\n  \"senha\": \"1232456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/sessoes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"sessoes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "teste de idententificação usuario",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "3ed9dac8-2874-4f88-b9bd-e9e58f135a49",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3333/usuarios/eu",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"usuarios",
+						"eu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "teste para criar pet para usuario",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "3ed9dac8-2874-4f88-b9bd-e9e58f135a49",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Melissa Princisval\",\r\n  \"especie\": \"cachorro\",\r\n  \"raca\": \"Shitzu\",\r\n  \"cor\": \"Mel\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/pets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listas todos os pets por id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "3ed9dac8-2874-4f88-b9bd-e9e58f135a49",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3333/pets?authorization=3ed9dac8-2874-4f88-b9bd-e9e58f135a49",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"pets"
+					],
+					"query": [
+						{
+							"key": "authorization",
+							"value": "3ed9dac8-2874-4f88-b9bd-e9e58f135a49"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "crianção de parceiros",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"ONG test 2\",\r\n  \"email\": \"contat12o@on121g11.com\",\r\n  \"telefone\": \"3237221122\",\r\n  \"endereco\": \"Rua das Flores, 1312300, Centro, Muriaé\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/parceiros",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"parceiros"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET DE TODOS OS PARCEIROS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/parceiros",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"parceiros"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET DE PARCEITOS POR ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/parceiros/93a78890-a41a-4ca9-312-cf52424be71e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"parceiros",
+						"93a78890-a41a-4ca9-312-cf52424be71e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "put parceiros ",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "authorization",
+						"value": "d309396a-9b4a-4552-b8ba-bed8b5eb9121",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"telefone\": \"32999999999\",\r\n  \"email\": \"putemail@test1.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/parceiros/eu",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"parceiros",
+						"eu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post pet na ong",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "93a78890-a41a-4ca9-80b7-cf52424be71e",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"nome pra gato teste 1\",\r\n  \"especie\": \"gato\",\r\n  \"raca\": \"Siamês\",\r\n  \"cor\": \"Branco e cinza\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/parceiros/pets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"parceiros",
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PRA LISTAR ANIMAIS PRA ADOÇÃO",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/adocao/pets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"adocao",
+						"pets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listar pet/adoção por id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3333/adocao/pets/6ed6ad41-b1dd-4eb3-ab02-1b4185f1d8a6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"adocao",
+						"pets",
+						"6ed6ad41-b1dd-4eb3-ab02-1b4185f1d8a6"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
