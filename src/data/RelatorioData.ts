@@ -1,6 +1,5 @@
 import { prisma } from '../bd'
 
-// Tipo de dados para criar um Relatório
 interface RelatorioDTO {
     tipo: 'perdido' | 'encontrado' | 'avistado';
     localizacao: string;
@@ -19,6 +18,29 @@ class RelatorioData {
         }
     })
     }
+
+    async listarPublicos() {
+    return await prisma.relatorio.findMany({
+      // Vamos incluir os dados do pet em cada relatório
+        include: {
+            pet: true
+    },
+      // Ordena pelos mais recentes primeiro
+        orderBy: {
+            data_relato: 'desc'
+        }
+    })
+    }
+
+    async buscarPorId(id: string) {
+    return await prisma.relatorio.findUnique({
+        where: { id },
+        include: {
+        pet: true
+        }
+    })
+    }
+
 }
 
 export { RelatorioData, RelatorioDTO }
