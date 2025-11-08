@@ -1,13 +1,20 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { CriarPetBusiness } from '../business/CriarPetBusiness'
 import { ListarPetsDoDonoBusiness } from '../business/ListarPetsDoDonoBusiness'
+import { BuscarPetPorIdBusiness } from '../business/BuscarPetPorIdBusiness'
+import { PetUpdateDTO } from '../data/PetData'
+import { AtualizarPetBusiness } from '../business/AtualizarPetBusiness'
+import { DeletarPetBusiness } from '../business/DeletarPetBusiness'
 
 const criarPetBusiness = new CriarPetBusiness()
 const listarPetsDoDonoBusiness = new ListarPetsDoDonoBusiness()
+const buscarPetPorIdBusiness = new BuscarPetPorIdBusiness()
+const atualizarPetBusiness = new AtualizarPetBusiness()
+const deletarPetBusiness = new DeletarPetBusiness()
 
 class PetController {
 
-    async criar(request: FastifyRequest, reply: FastifyReply) {
+  async criar(request: FastifyRequest, reply: FastifyReply) {
 
         try {
         // 1. Pega o ID do dono (usuário logado) do cabeçalho
@@ -38,7 +45,7 @@ class PetController {
         }
     }
     
-    async listarPorDono(request: FastifyRequest, reply: FastifyReply) {
+  async listarPorDono(request: FastifyRequest, reply: FastifyReply) {
     try {
       // 1. Pega o ID do dono (usuário logado) do cabeçalho
         const idDoDono = request.headers.authorization
@@ -52,7 +59,77 @@ class PetController {
         }
     }
 
-    
+  async buscarPorId(request: FastifyRequest, reply: FastifyReply) {
+      try {
+        //Pega o ID do dono (usuário logado) do cabeçalho
+        const idDoDono = request.headers.authorization
+
+        //Pega o ID do pet dos parâmetros da URL
+        const { idDoPet } = request.params as { idDoPet: string }
+
+        //Envia para a camada de negócio
+        const pet = await buscarPetPorIdBusiness.executar({
+          idDoPet: idDoPet,
+          idDoDono: idDoDono as string
+        })
+
+        //Retorna 200 (OK) com os dados do pet
+        return reply.status(200).send(pet)
+
+      } catch (error: any) {
+        // 404 = Não encontrado
+        // 401 = Não autorizado (não é o dono)
+        return reply.status(error.message.includes("Acesso negado") ? 401 : 404).send({ error: error.message })
+      }
+  }
+
+  async atualizar(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      //Pega o ID do dono (usuário logado) do cabeçalho
+      const idDoDono = request.headers.authorization
+
+      //Pega o ID do pet dos parâmetros da URL
+      const { idDoPet } = request.params as { idDoPet: string }
+
+      //Pega os dados para atualizar do corpo da requisição
+      const dados = request.body as PetUpdateDTO
+
+      //Envia para a camada de negócio
+      const pet = await atualizarPetBusiness.executar({
+        idDoPet: idDoPet,
+        idDoDono: idDoDono as string,
+        dados: dados
+      })
+
+      //Retorna 200 (OK) com os dados do pet atualizado
+      return reply.status(200).send(pet)
+
+    } catch (error: any) {
+      return reply.status(error.message.includes("Acesso negado") ? 401 : 400).send({ error: error.message })
+    }
+  }
+
+  async deletar(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      //Pega o ID do dono (usuário logado) do cabeçalho
+      const idDoDono = request.headers.authorization
+
+      //Pega o ID do pet dos parâmetros da URL
+      const { idDoPet } = request.params as { idDoPet: string }
+
+      //Envia para a camada de negócio
+      const resultado = await deletarPetBusiness.executar({
+        idDoPet: idDoPet,
+        idDoDono: idDoDono as string
+      })
+
+      //Retorna 200 (OK) com a mensagem de sucesso
+      return reply.status(200).send(resultado)
+
+    } catch (error: any) {
+      return reply.status(error.message.includes("Acesso negado") ? 401 : 400).send({ error: error.message })
+    }
+  }
   // (Futuramente: deletarPet, etc.)
 }
 

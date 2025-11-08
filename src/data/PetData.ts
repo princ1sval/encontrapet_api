@@ -6,7 +6,14 @@ interface PetDTO {
     cor: string;
     dono_ID?: string; // O ID do usuário
     Ong_ID?: string;  // ID da ONG (opcional)
-    }
+}
+
+interface PetUpdateDTO {
+    nome?: string;
+    especie?: string;
+    raca?: string;
+    cor?: string;
+}
 
     class PetData {
     async criar(dados: PetDTO) {
@@ -47,7 +54,19 @@ interface PetDTO {
         })
     }
 
+    async atualizar(id: string, dados: PetUpdateDTO) {
+    return await prisma.pet.update({
+        where: { id },
+        data: dados // O Prisma só atualiza os campos que forem enviados
+        })
+    }
+
+    async deletar(id: string) {
+    return await prisma.pet.delete({
+        where: { id }
+        })
+    }
     
 }
 
-export { PetData, PetDTO }
+export { PetData, PetDTO, PetUpdateDTO }
