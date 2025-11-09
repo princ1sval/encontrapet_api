@@ -11,4 +11,5 @@ export async function relatoriosRoutes(app: FastifyInstance) {
     app.post('/relatorios/avistado', relatorioController.criarAvistado)
     app.get('/relatorios/publicos', relatorioController.listarPublicos)
     app.get('/relatorios/:idDoRelatorio', relatorioController.buscarPorId)
+    app.get('/relatorios/:idDoRelatorio/combinacoes', relatorioController.buscarCombinacoes)
 }

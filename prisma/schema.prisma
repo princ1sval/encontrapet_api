@@ -17,6 +17,7 @@ datasource db {
 // para fazer coisas como: prisma.usuario.create(...)
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 // --- SEUS MODELOS (TABELAS) COMEÇAM AQUI ---
@@ -102,7 +103,7 @@ model Relatorio {
   // @default(now()) = Define um valor padrão. Se você não enviar uma data,
   // o banco de dados vai preencher com a data e hora atuais.
   data_relato   DateTime @default(now())
-  localizacao   String
+  localizacao   Unsupported("geography(Point, 4326)")
   descricao     String
   
   // --- Relação (FK) ---
@@ -117,21 +118,15 @@ model Relatorio {
 
 model Candidatura {
   id          String @id @default(uuid())
-  // @default("pendente") = Define "pendente" como o valor padrão
-  // para o status quando uma nova candidatura for criada.
   status      String @default("pendente") // "aprovado", "rejeitado"
 
-  // --- As 3 Chaves Estrangeiras que conectam tudo ---
-  
-  // FK - USUÁRIO do seu DER
+  // As 3 chaves estrangeiras que conectam tudo
   Usuario_ID  String
   usuario     Usuario @relation(fields: [Usuario_ID], references: [id])
 
-  // FK - PET do seu DER
   Pet_ID      String
   pet         Pet     @relation(fields: [Pet_ID], references: [id])
 
-  // FK - ONG do seu DER
   ONG_ID      String
   ong         ONG     @relation(fields: [ONG_ID], references: [id])
 

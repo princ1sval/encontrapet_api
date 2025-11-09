@@ -8,7 +8,8 @@ const petData = new PetData()
 interface DadosRelatorioPerdido {
     idDoUsuarioLogado: string;
     idDoPet: string;
-    localizacao: string;
+    latitude: number;    
+    longitude: number;
     descricao: string;
 }
 
@@ -17,7 +18,7 @@ class CriarRelatorioPerdidoBusiness {
     async executar(dados: DadosRelatorioPerdido) {
 
     //Verifica se os IDs foram fornecidos
-    if (!dados.idDoPet || !dados.idDoUsuarioLogado) {
+    if (!dados.idDoPet || !dados.idDoUsuarioLogado || !dados.latitude || !dados.longitude) {
         throw new Error("Dados incompletos.")
     }
 
@@ -35,7 +36,8 @@ class CriarRelatorioPerdidoBusiness {
     //Envia para a camada de dados criar o relatório
     const novoRelatorio = await relatorioData.criar({
         tipo: 'perdido',
-        localizacao: dados.localizacao,
+        latitude: dados.latitude,
+        longitude: dados.longitude,
         descricao: dados.descricao,
         petId: dados.idDoPet
     })

@@ -10,8 +10,8 @@ interface DadosRelatorioAvistado {
     especie: string;
     raca?: string;
     cor: string;
-    // Dados do Relatório
-    localizacao: string;
+    latitude: number;   
+    longitude: number;
     descricao: string;
 }
 
@@ -20,7 +20,7 @@ class CriarRelatorioAvistadoBusiness {
     async executar(dados: DadosRelatorioAvistado) {
 
     //Valida dados básicos
-    if (!dados.especie || !dados.localizacao) {
+    if (!dados.especie || !dados.latitude || !dados.longitude) {
         throw new Error("Dados incompletos: Espécie e localização são obrigatórios.")
     }
 
@@ -36,7 +36,8 @@ class CriarRelatorioAvistadoBusiness {
     // Cria o Relatório e ligar ao pet recém-criado
     const novoRelatorio = await relatorioData.criar({
         tipo: 'avistado',
-        localizacao: dados.localizacao,
+        latitude: dados.latitude, 
+        longitude: dados.longitude,
         descricao: dados.descricao,
         petId: novoPet.id
     })

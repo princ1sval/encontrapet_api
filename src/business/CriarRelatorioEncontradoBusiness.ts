@@ -11,7 +11,8 @@ interface DadosRelatorioEncontrado {
     raca?: string;
     cor: string;
     // Dados do Relatório
-    localizacao: string;
+    latitude: number;  
+    longitude: number;
     descricao: string;
 }
 
@@ -20,7 +21,7 @@ class CriarRelatorioEncontradoBusiness {
     async executar(dados: DadosRelatorioEncontrado) {
 
     // Valida dados básicos
-    if (!dados.nome || !dados.especie || !dados.localizacao) {
+    if (!dados.nome || !dados.especie || !dados.latitude || !dados.longitude) {
         throw new Error("Dados incompletos: Nome (provisório), espécie e localização são obrigatórios.")
     }
 
@@ -36,7 +37,8 @@ class CriarRelatorioEncontradoBusiness {
     //Cria o Relatório e ligar ao pet recém-criado
     const novoRelatorio = await relatorioData.criar({
         tipo: 'encontrado',
-        localizacao: dados.localizacao,
+        latitude: dados.latitude,    
+        longitude: dados.longitude,
         descricao: dados.descricao,
         petId: novoPet.id 
     })

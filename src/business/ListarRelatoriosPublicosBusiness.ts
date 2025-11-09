@@ -1,12 +1,12 @@
-import { RelatorioData } from '../data/RelatorioData'
+import { RelatorioData, FiltrosRelatorio } from '../data/RelatorioData'
 
 const relatorioData = new RelatorioData()
 
 class ListarRelatoriosPublicosBusiness {
 
-    async executar() {
-    //Chama a camada de dados para buscar os relatórios
-    const relatorios = await relatorioData.listarPublicos()
+    async executar(filtros: FiltrosRelatorio) {
+
+    const relatorios = await relatorioData.listarPublicos(filtros)
 
     return relatorios
     }
