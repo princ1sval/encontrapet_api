@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "prisma": {
-  "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
@@ -19,8 +19,11 @@
     "fastify": "^5.6.1"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.8.1",
+    "jest": "^30.2.0",
     "prisma": "^6.19.0",
+    "ts-jest": "^29.4.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
