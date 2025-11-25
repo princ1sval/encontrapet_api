@@ -1,0 +1,157 @@
+-- ==============================================================
+-- SCRIPT DE CRIAÇÃO DO BANCO DE DADOS - ENCONTRAPET API
+-- Autor: João Pedro, Victor e João Vitor
+-- Data: Novembro/2025
+-- ==============================================================
+
+-- 1. HABILITAR EXTENSÃO POSTGIS
+-- O comando abaixo ativa a extensão "PostGIS" no banco de dados.
+-- Isso é necessário para podermos usar o tipo de dado "geography" 
+-- e fazer cálculos de distância (Geo-Query) nos relatórios.
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- ==============================================================
+-- 2. TABELA DE USUÁRIOS
+-- Armazena os dados de quem usa o app (tutores e adotantes).
+-- ==============================================================
+CREATE TABLE "usuarios" (
+    -- 'id' é a Chave Primária (PK). É um texto (String) porque usamos UUID.
+    "id" TEXT NOT NULL,
+    
+    -- Dados pessoais do usuário
+    "nome" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "senha" TEXT NOT NULL, -- A senha será salva como texto (idealmente seria um hash)
+    "telefone" TEXT NOT NULL,
+    "cidade" TEXT NOT NULL,
+
+    -- Define a regra de que o campo "id" é o identificador único da tabela
+    CONSTRAINT "usuarios_pkey" PRIMARY KEY ("id")
+);
+
+-- CRIAÇÃO DE ÍNDICE ÚNICO
+-- Esta regra garante que o banco de dados NUNCA aceite dois usuários
+-- com o mesmo e-mail. Se tentar, o banco dá erro.
+CREATE UNIQUE INDEX "usuarios_email_key" ON "usuarios"("email");
+
+
+-- ==============================================================
+-- 3. TABELA DE ONGS (PARCEIROS)
+-- Armazena os dados das instituições que cuidam de animais.
+-- ==============================================================
+CREATE TABLE "ongs" (
+    "id" TEXT NOT NULL,
+    "nome" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "telefone" TEXT NOT NULL,
+    "endereco" TEXT NOT NULL,
+
+    CONSTRAINT "ongs_pkey" PRIMARY KEY ("id")
+);
+
+-- Garante que não existam duas ONGs com o mesmo e-mail
+CREATE UNIQUE INDEX "ongs_email_key" ON "ongs"("email");
+
+
+-- ==============================================================
+-- 4. TABELA DE PETS
+-- O coração do sistema. Um pet pode ser de um Usuário OU de uma ONG.
+-- ==============================================================
+CREATE TABLE "pets" (
+    "id" TEXT NOT NULL,
+    "nome" TEXT NOT NULL,
+    "especie" TEXT NOT NULL, -- Ex: "cachorro", "gato"
+    "raca" TEXT,             -- Pode ser nulo (sem raça definida)
+    "cor" TEXT NOT NULL,
+
+    -- CHAVES ESTRANGEIRAS (FK) OPCIONAIS
+    -- Estas colunas ligam o Pet ao seu dono.
+    -- Se 'dono_ID' tiver valor, o pet é de um Usuário.
+    -- Se 'Ong_ID' tiver valor, o pet é de uma ONG (está para adoção).
+    "dono_ID" TEXT,
+    "Ong_ID" TEXT,
+
+    CONSTRAINT "pets_pkey" PRIMARY KEY ("id")
+);
+
+
+-- ==============================================================
+-- 5. TABELA DE RELATÓRIOS
+-- Registra os eventos de "Perdido", "Encontrado" ou "Avistado".
+-- ==============================================================
+CREATE TABLE "relatorios" (
+    "id" TEXT NOT NULL,
+    
+    -- Tipo do alerta: 'perdido', 'encontrado', etc.
+    "tipo" TEXT NOT NULL,
+    
+    -- Data de criação. 'DEFAULT CURRENT_TIMESTAMP' significa que se
+    -- não enviarmos a data, o banco preenche com a data/hora atual.
+    "data_relato" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
+    -- CAMPO ESPECIAL (GEOLOCALIZAÇÃO)
+    -- Tipo 'geography(Point, 4326)'. Armazena Latitude e Longitude
+    -- usando o sistema de coordenadas GPS padrão mundial (SRID 4326).
+    "localizacao" geography(Point, 4326) NOT NULL,
+    
+    "descricao" TEXT NOT NULL,
+    
+    -- Chave Estrangeira: Todo relatório precisa estar ligado a um Pet.
+    "Pet_ID" TEXT NOT NULL,
+
+    CONSTRAINT "relatorios_pkey" PRIMARY KEY ("id")
+);
+
+
+-- ==============================================================
+-- 6. TABELA DE CANDIDATURAS (ADOÇÃO)
+-- Registra o interesse de um Usuário em adotar um Pet de uma ONG.
+-- ==============================================================
+CREATE TABLE "candidaturas" (
+    "id" TEXT NOT NULL,
+    
+    -- Status padrão começa como 'pendente'
+    "status" TEXT NOT NULL DEFAULT 'pendente',
+    
+    -- Esta tabela conecta TUDO. Ela precisa saber:
+    "Usuario_ID" TEXT NOT NULL, -- Quem quer adotar?
+    "Pet_ID" TEXT NOT NULL,     -- Qual pet ele quer?
+    "ONG_ID" TEXT NOT NULL,     -- De qual ONG é esse pet?
+
+    CONSTRAINT "candidaturas_pkey" PRIMARY KEY ("id")
+);
+
+
+-- ==============================================================
+-- DEFINIÇÃO DAS RELAÇÕES (FOREIGN KEYS)
+-- Aqui dizemos ao banco como as tabelas se conectam de verdade.
+-- ==============================================================
+
+-- Relação: Pet -> Usuário
+-- Diz que a coluna 'dono_ID' na tabela 'pets' aponta para o 'id' na tabela 'usuarios'.
+-- ON DELETE SET NULL: Se o usuário for deletado, o pet fica "sem dono" (não é apagado).
+ALTER TABLE "pets" ADD CONSTRAINT "pets_dono_ID_fkey" 
+    FOREIGN KEY ("dono_ID") REFERENCES "usuarios"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- Relação: Pet -> ONG
+ALTER TABLE "pets" ADD CONSTRAINT "pets_Ong_ID_fkey" 
+    FOREIGN KEY ("Ong_ID") REFERENCES "ongs"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- Relação: Relatório -> Pet
+-- Diz que todo relatório pertence a um pet.
+-- ON DELETE RESTRICT: Impede de deletar um Pet se ele tiver relatórios ativos.
+ALTER TABLE "relatorios" ADD CONSTRAINT "relatorios_Pet_ID_fkey" 
+    FOREIGN KEY ("Pet_ID") REFERENCES "pets"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Relações da Candidatura
+-- Liga a candidatura ao Usuário interessado
+ALTER TABLE "candidaturas" ADD CONSTRAINT "candidaturas_Usuario_ID_fkey" 
+    FOREIGN KEY ("Usuario_ID") REFERENCES "usuarios"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Liga a candidatura ao Pet desejado
+ALTER TABLE "candidaturas" ADD CONSTRAINT "candidaturas_Pet_ID_fkey" 
+    FOREIGN KEY ("Pet_ID") REFERENCES "pets"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Liga a candidatura à ONG responsável
+ALTER TABLE "candidaturas" ADD CONSTRAINT "candidaturas_ONG_ID_fkey" 
+    FOREIGN KEY ("ONG_ID") REFERENCES "ongs"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

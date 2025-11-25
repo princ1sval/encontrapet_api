@@ -15,8 +15,6 @@ Prisma ORM
 
 Jest
 
-Zod (planejado)
-
 🏛️ Arquitetura
 
 O sistema segue uma arquitetura baseada em MVC para API REST, distribuída da seguinte forma:
